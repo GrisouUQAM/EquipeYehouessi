@@ -1,0 +1,110 @@
+html, body { margin:0; padding:0; background-color:#fff; text-align:center; font-family:Arial; font-size:10pt; }
+p { margin:0; padding:0; font-family:Arial; font-size:10pt; color:#323232; }
+a { color:#4684e8; text-decoration:none; cursor:pointer; }
+a:hover { text-decoration:underline; }
+a:visited { color:#4684e8; }
+
+ul { list-style:none; padding:0; margin:0; line-height:1.4em }
+
+#header { width:100%; height:75px; border-bottom:1px solid #dedede; background: url("http://www.sportvac.com/agent/images/bkg-header-v2.png") repeat-x; text-align:center; }
+#header-content { width:95%; height:75px; margin:0 auto; }
+#header-content-logo { text-align:left; padding:16px 0 0 0; float:left; }
+#header-content-btn { padding:22px 0 0 0; float:right; text-align:right; }
+#logo { height:42px; border:none; }
+
+#content { text-align:left; width:100%; }
+#content-header { width:95%; margin: 0 auto; } 
+#content-main { width:95%; margin:0 auto; } 
+#content-header-title { float:left; text-align:left; margin:0; padding:0; }
+#content-header-menu { float:right; margin-top:17px; }
+#footer { position:fixed; bottom:0; width:100%; height:24px; background:#f2f2f2; border-top:1px solid #d9d9d9; color:#686868; }
+#footer-content { width:95%; height:75px; margin:0 auto; padding:3px 0; }
+
+#section { width:860px; margin-right:30px; }
+.section-ajout-ressource { width:830px; border-bottom:1px solid #c5c5c5; background:#fcfcfc; padding:10px; }
+
+#ico_loading, #box_result  { display: none; }
+
+#result h2 { padding-top:10px }
+#result p { color:#696969; font-size:9pt; color:#696969; padding-bottom:10px; }
+#result p.desc { color:#696969; font-size:12pt; padding-top:15px; border-bottom:1px solid #c5c5c5; }
+
+.tbl_result td.head { height:35px; border-bottom:1px solid #b5b5b5; color:#696969; font-size:11pt;  }
+.tbl_result td.res { height:35px; border-bottom:1px solid #f6f6f6; }
+.tbl_result tr.res:hover { background:#ffffd6; cursor:pointer; }
+.tbl_result td.subRes { height:35px; }
+.tbl_result tr.subRes:hover { background:#e5eaf6; cursor:pointer; }
+#listeDiscussion {height:200px;overflow:auto;}
+
+.highlight { background:#ffffd6; cursor:pointer; }
+
+.expandable { display:none; }
+
+.clear { clear:both; }
+.float-left { float:left; }
+.float-right { float:right; }
+.small { font-size:8pt; }
+
+/* TITRE */
+h1 { font-size:16pt; color:#323232; padding:0; margin:0; }
+h1.content-header-title { color:#e74b39; font-weight:lighter; padding:20px 0; }
+h2 { font-size:12pt; color:#323232; padding:0; margin:0; }
+h3 { font-size:10pt; color:#323232; padding:10px 0; margin:0; }
+h2.form { padding-bottom:0; }
+/* TITRE */
+
+/* TEXTE */
+.gray-10 { font-size:10pt; color:#747474; }
+.black-14 { font-size:12pt; color:#323232; }
+/* TEXTE */
+
+/* HR */ 
+hr.content-header { color:#dedede; background-color:#dedede; height:1px; width:100%; border:none; margin-bottom:30px; }
+hr.content { border:1px dotted #e2e2e2; border-style:none none dotted; }
+/* HR */ 
+
+/* BOX */
+.box-form { width:300px; border:1px solid #dedede; -moz-border-radius:4px; border-radius:4px; padding:0; margin:0; }
+.box-form-head-foot{ padding:15px 25px; border-bottom:1px solid #dedede; background:#f2f2f2; }
+.box-form-content{ padding:20px 25px; border-bottom:1px solid #dedede; }
+.box-form-message { padding:10px; margin-top:10px; border:1px dashed #dedede; background:#ffffd6; -moz-border-radius:4px; border-radius:4px; }
+.box-section-container { overflow:hidden; border:4px solid #f2f2f2; -moz-border-radius:6px; border-radius:6px; background-color:#fff; margin-bottom:10px; padding:0; width:100%; }
+.box-section-content { display:block; float:left; border:1px solid #c5c5c5; -moz-border-radius:4px; border-radius:4px; background-color:#fff; padding:0; width:99%; }
+.box-section-content-top { padding:7px 15px; border-bottom:1px solid #c5c5c5; -moz-border-top-right-radius:4px; border-top-right-radius:4px; -moz-border-top-left-radius:4px; border-top-left-radius:4px; background:#f2f2f2; }
+.box-section-content-bottom { position:relative; padding:15px; }
+.box-section-modif { text-align:right; padding:5px; background:#ececec; }
+.box_modif_btn { position:absolute; right:0; bottom:0; padding:15px; }
+/* BOX */
+
+/* FORM */
+.form-txt { font-size:11pt; font-family:Arial; color:#696969; width:243px; height:28px; line-height:20px; padding-left:5px; border:1px solid #C8C8C8; background-color:#FFF; }
+.form-txt-section { font-size:9pt; font-family:Arial; color:#696969; width:250px; height:20px; line-height:15px; padding-left:5px; border:1px solid #C8C8C8; background-color:#FFF; }
+.form-txt-small { font-size:11pt; font-family:Arial; color:#696969; width:140px; height:28px; line-height:20px; padding-left:5px; border:1px solid #C8C8C8; background-color:#FFF; }
+.form-ddl { font-size:11pt; font-family:Arial; color:#696969; width:250px; height:32px; padding:5px 5px 5px 0; border:1px solid #C8C8C8; background-color:#FFF; }
+.form-multi { font-size:11pt; font-family:Arial; color:#696969; width:243px; height:100px; padding:5px 0px 0px 5px; border:1px solid #C8C8C8; background-color:#FFF; }
+/* FORM */
+
+/* BOUTON */
+.btn { cursor:pointer; padding:0 10px; -moz-border-radius:2px; -webkit-border-radius:2px; }
+.btn-gris { height:31px; cursor:pointer; padding:0 10px; background:#f2f2f2; border:1px solid #d9d9d9; color:#686868; -moz-border-radius:2px; -webkit-border-radius:2px; }
+.btn-gris:hover { background:#f2f2f2; border:1px solid #c6c6c6; }
+.btn-bleu { height:31px; cursor:pointer; padding:0 10px; background:#4d90fe; border:1px solid #357AE8; color:White; font-weight:bold; -moz-border-radius:2px; -webkit-border-radius:2px; }
+.btn-bleu:hover { background-color:#357AE8; border:1px solid #2F5BB7; }
+.btn-rouge { height:31px; cursor:pointer; padding:0 10px; background:#d34937; border:1px solid #c64433; color:White; font-weight:bold; -moz-border-radius:2px; -webkit-border-radius:2px; }
+.btn-rouge:hover { background-color:#ca3b2b; border:1px solid #b0281a; }
+/* BOUTON */
+
+/* PADDING */
+.padding-bottom-3 { padding-bottom:3px; }
+.padding-bottom-5 { padding-bottom:5px; }
+.padding-bottom-10 { padding-bottom:10px; }
+.padding-bottom-15 { padding-bottom:15px; }
+.padding-bottom-20 { padding-bottom:20px; }
+/* PADDING */
+
+.height-5 { height:5px; }
+.height-10 { height:10px; }
+
+
+
+
