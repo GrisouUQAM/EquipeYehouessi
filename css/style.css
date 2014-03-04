@@ -31,6 +31,7 @@ ul { list-style:none; padding:0; margin:0; line-height:1.4em }
 
 .tbl_result td.head { height:35px; border-bottom:1px solid #b5b5b5; color:#696969; font-size:11pt;  }
 .tbl_result td.res { height:35px; border-bottom:1px solid #f6f6f6; }
+.tbl_result td.resTd { height:35px; border-bottom:1px solid #f6f6f6; }
 .tbl_result tr.res:hover { background:#ffffd6; cursor:pointer; }
 .tbl_result td.subRes { height:35px; }
 .tbl_result tr.subRes:hover { background:#e5eaf6; cursor:pointer; }

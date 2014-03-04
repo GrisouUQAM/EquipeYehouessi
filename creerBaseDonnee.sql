@@ -23,8 +23,8 @@ SET time_zone = "+00:00";
 --
 -- Base de données: `grisou`
 --
-CREATE DATABASE IF NOT EXISTS `grisou` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
-USE `grisou`;
+--CREATE DATABASE IF NOT EXISTS `grisou` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
+--USE `grisou`;
 
 
 
@@ -53,3 +53,4 @@ CREATE TABLE IF NOT EXISTS `user` (
   UNIQUE KEY `userName` (`userName`),
   KEY `userName_2` (`userName`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+

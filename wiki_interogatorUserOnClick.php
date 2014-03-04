@@ -2,14 +2,14 @@
 
 //set_time_limit(360);
 connectToDB();
-$path = getcwd();
+//$path = getcwd();
 //include( $path. '/creerTableFictive.php');
 
 
-$creerBaseDonnee = $path.'/creerBaseDonnee.sql';
+//$creerBaseDonnee = $path.'/creerBaseDonnee.sql';
 
-$query = "source $creerBaseDonnee" ;	
-Mysql_Query($query);
+//$query = "source $creerBaseDonnee" ;	
+//Mysql_Query($query);
 		
 
 $user = $_GET["user"];
@@ -80,13 +80,13 @@ function printUserTalks($talks, $user) {
     }
     
 	while($row = mysql_fetch_assoc($talks)) {
-     
+        $envoi = '"'."envoiDiscussion(this)".'"';
     	$pageId = $row["discussionId"];
 		$pageTitle = $row["titre"];		
 		$isTalkCreator = "Non";
-				
-		$result .= "<tr class='res' >";
-		$result .= "<td class='res' >" . $pageId . "</td>";
+		 		
+		$result .= "<tr class='res' onclick = $envoi>";               
+		$result .= "<td class='resTd' >" . $pageId . "</td>";
 		$result .= "<td class='res' >" . $pageTitle . "</td>";		
 		$result .= "<td class='res' style='text-align:left; padding-right:15px;'>" . $isTalkCreator . "</td>";
 		$result .= "</tr>";	

@@ -8,7 +8,7 @@ function sendForm() {
 	$("#ico_loading").fadeIn("fast");
 	$("#box_result").fadeOut("fast");
 	
-	$.get("wiki_interogatorRadio.php", { user:username, wiki:wikiurl }, function(data) {
+	$.get("wiki_interogatorUserOnClick.php", { user:username, wiki:wikiurl }, function(data) {
 		$("#result").html(data);
 		var values = [], labels = [];
 
@@ -23,6 +23,24 @@ function sendForm() {
 	
 
 	return false;
+}
+
+function envoiDiscussion(element) {
+    var y = element.innerHTML;
+    alert(y);
+    //MaintenAnt je vais recuperer l'elemeent surlequel il a clicke et esnsuite faire un XMLREQUEST'et l<envooye rsur le serveur avec un fichier de traitement specifique
+  // var z = y.find(".resTd"); 
+ //  alert (z);
+   
+   
+  // var clickedValue = y.find('td:first').next().text();
+
+//alert(clickedValue );
+   //     alert(y.find('td.resTd').text());
+
+  // alert (z.text());
+    
+    
 }
 /*function essai(){
 	var lignes=document.getElementById('mytable').getElementsByTagName('tr'); 
