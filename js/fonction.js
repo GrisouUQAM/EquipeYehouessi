@@ -8,7 +8,7 @@ function sendForm() {
 	$("#ico_loading").fadeIn("fast");
 	$("#box_result").fadeOut("fast");
 	
-	$.get("wiki_interogatorUserOnClick.php", { user:username, wiki:wikiurl }, function(data) {
+	$.get("wiki_interogator.php", { user:username, wiki:wikiurl }, function(data) {
 		$("#result").html(data);
 		var values = [], labels = [];
 
@@ -27,40 +27,43 @@ function sendForm() {
 
 function envoiDiscussion(element) {
     var y = element.innerHTML;
-    alert(y);
-    //MaintenAnt je vais recuperer l'elemeent surlequel il a clicke et esnsuite faire un XMLREQUEST'et l<envooye rsur le serveur avec un fichier de traitement specifique
-  // var z = y.find(".resTd"); 
- //  alert (z);
-   
-   
-  // var clickedValue = y.find('td:first').next().text();
-
-//alert(clickedValue );
-   //     alert(y.find('td.resTd').text());
-
-  // alert (z.text());
-    
-    
+    var String=y.substring((y.indexOf(">")+1),(y.indexOf("/")-1));       
+    var discussion = "nomDiscussion="+String;
+    //var discussion = "fname=Henry&lname=Ford";
+    var url = "actionDiscussion.php";   
+    $("#icoCentraliteLoading").fadeIn("fast");
+   // $("#box_result").fadeOut("fast");
+        
+if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
+  xmlhttp=new XMLHttpRequest();
+} else {// code for IE6, IE5
+  xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
 }
-/*function essai(){
-	var lignes=document.getElementById('mytable').getElementsByTagName('tr'); 
-	var i=1; 
-	var t = new Array(); 
-	while(lignes[i]) 
-	{ 
-	var cells=lignes[i].getElementsByTagName('td'); 
-	t.push(cells[1].innerHTML); 
-	alert(cells[1].innerHTML);
-	i++; 
-	} 
 
-	var cells=lignes[2].getElementsByTagName('td'); 
-	//t.push(cells[1].innerHTML); 
-	alert(cells[1].innerHTML);
+
+xmlhttp.open("POST",url,true);
+xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+//http.setRequestHeader("Content-length", params.length);
+//http.setRequestHeader("Connection", "close");
+ xmlhttp.send(discussion);
+ xmlhttp.onreadystatechange=function() {
+   if (xmlhttp.readyState==4 && xmlhttp.status==200){
+     document.getElementById("box-section-content-bottom").innerHTML=xmlhttp.responseText;
+     alert(http.responseText);
+  //   $("#box_result").fadeIn("slow");
+     $("#icoCentraliteLoading").fadeOut("slow");
+     }
+   }
+ 
+
+ /* $.get("actionDiscussion.php", { nomDiscussion:y},function(data){
+     alert("Data: " + data );
+   });*/
+ 
+      
+}
 	
-	}
-	
-function sendForm1() {
+/*function sendForm1() {
 
 	var username = document.getElementByName("paiement").value;
 	
