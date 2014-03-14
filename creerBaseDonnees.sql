@@ -61,7 +61,9 @@ DROP TABLE IF EXISTS `liens`;
 CREATE TABLE `liens`(
 `lienId` int(11) NOT NULL,
 `discussionId` int(11) NOT NULL,
+`debutLienId` int(11) NOT NULL,
 `debutLien` varchar(100) NOT NULL,
+`finLienId` int(11) NOT NULL,
 `finLien` varchar(100) NOT NULL,
 `poids` int(11) NOT NULL,
 PRIMARY KEY (`lienId`),

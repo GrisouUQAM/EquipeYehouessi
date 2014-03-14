@@ -36,12 +36,15 @@ $id = Mysql_fetch_array($ligne);
 $intervenantId = $id["intervenantId"];  
 //$centraliteDegre=  degreeCentrality($intervenantId);
 
- 
-$inter = "I1";
-$centraliteDegre=  degreeCentrality($inter);
-$centraliteInter=centraliteInter($intervenantId);
-$centraliteProxi=centraliteProxi($intervenantId);
 
+// Obtention du nombre total de noeuds
+$nbNoeud = calculNbTotalNoeud();
+
+
+$inter = "I1";
+$centraliteDegre=  degreeCentrality($inter,$nbNoeud);
+$centraliteInter=centraliteInter($intervenantId,$nbNoeud);
+$centraliteProxi=centraliteProxi($inter,$nbNoeud);
 
 
 $query = "select titre from discussion where discussionId=".$pageIdDiscus.";";
@@ -56,6 +59,15 @@ $resultCentralite=htmlResultCentralite($nomDiscussion,$centraliteDegre, $central
 print $resultCentralite;
 
 
+
+
+function calculNbTotalNoeud() {
+$query="SELECT count(*) as totalNode from (((select distinct debutLienId from liens ) union (select distinct finLienId from liens))as tableCommune);";
+$queryResult = Mysql_Query($query);
+$tableNbNoeud = mysql_fetch_assoc($queryResult);
+return $tableNbNoeud['totalNode'];
+
+}
 
 function htmlResultCentralite($nomDiscussion,$centraliteDegre, $centraliteInter, $centraliteProxi) {
     $resultCentralite="<h2 class='btn-rouge'><b> Centralit&eacute;s pour la discussion ".$nomDiscussion." </b></h2>
@@ -74,7 +86,7 @@ function htmlResultCentralite($nomDiscussion,$centraliteDegre, $centraliteInter,
     return $resultCentralite;
 }
 
-function etablitReseau($contributors, $user, $pageIdDiscus ) { //permet d'inserer dans la table discussion la liste de toutes les discussions auxquelles le user a participe
+function etablitReseau($contributors, $user, $intervenantId, $pageIdDiscus ) { //permet d'inserer dans la table discussion la liste de toutes les discussions auxquelles le user a participe
 	
        $i=0;     
 	foreach ($contributors as $contributor) {        
@@ -88,7 +100,7 @@ function etablitReseau($contributors, $user, $pageIdDiscus ) { //permet d'insere
            $userChar='"'.$user.'"' ;
             $query = "insert into grisou.intervenants(intervenantId,intervenantName,intervenantAuteurArticle) values(".$userId.",".$userNameChar.",".$zero.");";
           	Mysql_Query($query);
-            $query = "insert into grisou.liens(lienId,discussionId,debutLien,finLien,poids) values(".$i.",".$pageIdDiscus.",".$userChar.",".$userNameChar.",".$un.");";
+            $query = "insert into grisou.liens(lienId,discussionId,debutLienId,debutLien,finLienId,finLien,poids) values(".$i.",".$pageIdDiscus.",".$intervenantId.",".$userChar.",".$userId.",".$userNameChar.",".$un.");";
 	    Mysql_Query($query);
 	    $i=$i+1;
         }
