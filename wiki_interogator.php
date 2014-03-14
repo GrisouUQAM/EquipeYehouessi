@@ -71,7 +71,7 @@ function printUserTalks($talks, $user) {
     $listeDiscussion = "listeDiscussion";
 	
 	$result = "<h2>Discussions auxquelles <span style='color:blue;'>" . $user . "</span> a contribu&eacute;</h2>
-      <p>Cliquez sur une ligne pour choisir une discussion.<p>
+      <p style='color:blue;'>Cliquez sur une ligne pour choisir une discussion.<p>
       <table class='tbl_result' width='100%' >
       <tr>            
       <td class='head' width='20%'>Page ID</td>
