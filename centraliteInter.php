@@ -1,25 +1,44 @@
 <?php
 
- function centraliteInter($idIntervenant, $nbNoeud) {
-    
- 
-// Obtention des nombre de liens au noeud i
-$numLink_column = Mysql_Query("SELECT count(debutLienId) AS totalLink FROM liens WHERE debutLienId = '".$idIntervenant."' OR finLienId = '".$idIntervenant."'");
-$numLink = mysql_fetch_assoc($numLink_column);
+function centraliteInter($idIntervenant, $nbNoeud) {
+	$degree = numPaths($idIntervenant)/(($nbNoeud-1)*($nbNoeud-2));
+	return $degree;
+}
 
-// Obtention du nombre total de noeuds
-$numNode_column = Mysql_Query("SELECT count(lienId) AS totalNode FROM liens");
-$numNode = mysql_fetch_assoc($numNode_column);
+function numPaths($intervenantIdV){
+	//soit $numP le nombre de chemins les plus courts entre deux noeuds
+	//et $numI le nombre de chemins les plus courts entre deux noeuds par $intervenantIdV
+	$numP = 0;
+	$numI = 0;
+	
+	$query = "SELECT *  from (((select distinct debutLienId as noeuds from liens ) 
+			union (select distinct finLienId as noeuds from liens))as tableNoeud);";
+	$queryResult = Mysql_Query($query);
+	
+	while($rowI = mysql_fetch_assoc($queryResult)){
+		$intervenantIdI = $row["noeuds"];
+		while($rowJ = mysql_fetch_assoc($queryResult)){
+			$intervenantIdJ = $row["noeuds"];
+			if(strcmp($intervenantIdI,$intervenantIdJ)!=0){
+				$numP += compterPlusCourtChemins($intervenantIdI,$intervenantIdJ);
+				$numI += compterPlusCourtCheminsV($intervenantIdI,$intervenantIdJ,$intervenantIdV);
+			}
+		}
+	}
+	
+	$num = $numI/$numP;
+	return $num;
+}
 
+function compterPlusCourtChemins($i, $j){
+	//a completer
+	$n = 1;
+	return $n;
+}
 
-
-// calcul de la centralite
-$degree = $numLink['totalLink']/($numNode['totalNode']-1);
-
-
-return $degree;
-
-//A FAIRE DEMAIN ABSOLUMENT ET VOIR CE QUE CA DONNE
- //return 0;
+function compterPlusCourtCheminsV($i, $j, $v){
+	//a completer
+	$n = 1;
+	return $n;
 }
 ?>
