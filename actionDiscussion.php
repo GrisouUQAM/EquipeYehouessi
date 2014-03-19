@@ -7,11 +7,11 @@
 
 //http://en.wikipedia.org/w/api.php */
 
-
+session_start();
 
 //$nomDiscus = $_GET["nomDiscussion"]; 
 $pageIdDiscus=$_POST["nomDiscussion"];
-$user = $_SESSION['user'];
+$user =$_SESSION['user'];
 $wikiUrl = $_SESSION['wikiUrl'];
 
 require_once 'centraliteDegre.php';

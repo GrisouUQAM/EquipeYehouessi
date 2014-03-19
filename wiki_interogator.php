@@ -1,5 +1,6 @@
 <?php
 //
+session_start();
 
 require_once 'connectionDB.php';
 require_once 'creerReseauFictive.php';
@@ -8,7 +9,6 @@ connectToDB();
 videTables();
 //creerBaseDonnees();
 //$path = getcwd();
-//include( $path. '/creerTableFictive.php');
 //$creerBaseDonnee = $path.'/creerBaseDonnee.sql';
 //$query = "source $creerBaseDonnee" ;	
 //Mysql_Query($query);
