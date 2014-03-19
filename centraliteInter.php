@@ -16,9 +16,9 @@ function numPaths($intervenantIdV){
 	$queryResult = Mysql_Query($query);
 	
 	while($rowI = mysql_fetch_assoc($queryResult)){
-		$intervenantIdI = $row["noeuds"];
+		$intervenantIdI = $rowI["noeuds"];
 		while($rowJ = mysql_fetch_assoc($queryResult)){
-			$intervenantIdJ = $row["noeuds"];
+			$intervenantIdJ = $rowJ["noeuds"];
 			if(strcmp($intervenantIdI,$intervenantIdJ)!=0){
 				$numP += compterPlusCourtChemins($intervenantIdI,$intervenantIdJ);
 				$numI += compterPlusCourtCheminsV($intervenantIdI,$intervenantIdJ,$intervenantIdV);
