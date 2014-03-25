@@ -51,4 +51,16 @@ function dijkstra($graph_array, $source, $target) {
     array_unshift($path, $u);
     return array($path, $sumDistance);
 }
+
+function creerGraphe(){
+	$graph = array();
+	$query = "SELECT * FROM liens";
+	$queryResult = mysql_query($query);
+
+	while($row = mysql_fetch_assoc($queryResult)){
+		array_push($graph, array($row["debutLien"], $row["finLien"], $row["poids"]));
+	}
+
+	return $graph;
+}
 ?>

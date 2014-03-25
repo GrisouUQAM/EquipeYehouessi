@@ -27,18 +27,6 @@ function sumDist($intervenantIdI) {
 	return $sum;
 }
 
-function creerGraphe(){
-	$graph = array();
-	$query = "SELECT * FROM liens";
-	$queryResult = mysql_query($query);
-
-	while($row = mysql_fetch_assoc($queryResult)){
-		array_push($graph, array($row["debutLien"], $row["finLien"], $row["poids"]));
-	}
-
-	return $graph;
-}
-
 /*
 function dist($intervenantIdI,$intervenantIdJ) {
   $dist = 1; 
