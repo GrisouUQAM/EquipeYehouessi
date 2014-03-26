@@ -1,5 +1,5 @@
 <?php
-
+require_once 'dijkstra.php';
 function centraliteInter($idIntervenant, $nbNoeud) {
 	$degree = numPaths($idIntervenant)/(($nbNoeud-1)*($nbNoeud-2));
 	return $degree;
@@ -14,14 +14,17 @@ function numPaths($intervenantIdV){
 	$query = "SELECT *  from (((select distinct debutLienId as noeuds from liens ) 
 			union (select distinct finLienId as noeuds from liens))as tableNoeud);";
 	$queryResult = Mysql_Query($query);
+	$reseau = creerGraphe();
 	
 	while($rowI = mysql_fetch_assoc($queryResult)){
 		$intervenantIdI = $rowI["noeuds"];
 		while($rowJ = mysql_fetch_assoc($queryResult)){
 			$intervenantIdJ = $rowJ["noeuds"];
 			if(strcmp($intervenantIdI,$intervenantIdJ)!=0){
-				$numP += compterPlusCourtChemins($intervenantIdI,$intervenantIdJ);
-				$numI += compterPlusCourtCheminsV($intervenantIdI,$intervenantIdJ,$intervenantIdV);
+			//a completer: modifier l'algorithme de dijkstra pour chercher plus qu'un chemin court
+				list($chemin, $sumDist) = dijkstra($reseau, $intervenantIdI, $intervenantIdJ);
+				$numP += 1;
+				$numI += compterPlusCourtCheminsV($reseau,$intervenantIdI,$intervenantIdJ,$intervenantIdV);
 			}
 		}
 	}
@@ -30,14 +33,10 @@ function numPaths($intervenantIdV){
 	return $num;
 }
 
-function compterPlusCourtChemins($i, $j){
+function compterPlusCourtCheminsV($reseau, $i, $j, $v){
 	//a completer
-	$n = 1;
-	return $n;
-}
-
-function compterPlusCourtCheminsV($i, $j, $v){
-	//a completer
+	list($cheminV1, $sumDistV1) = dijkstra($reseau, $i, $v);
+	list($cheminV2, $sumDistV2) = dijkstra($reseau, $v, $j);
 	$n = 1;
 	return $n;
 }

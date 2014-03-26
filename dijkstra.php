@@ -1,5 +1,6 @@
 <?php
 //http://rosettacode.org/wiki/Dijkstra's_algorithm
+//a completer: modifier l'algorithme pour chercher plus qu'un chemin court
 function dijkstra($graph_array, $source, $target) {
     $vertices = array();
     $neighbours = array();
