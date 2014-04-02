@@ -43,8 +43,8 @@ function numPaths($intervenantIdV){
 	$queryResult = Mysql_Query($query);
 	$reseau = creerGraphe();
 	
-	for($i = 0; $i < mysql_num_rows($queryNom); $i++){
-		for($j = 0; $j < mysql_num_rows($queryNom); $j++){
+	for($i = 0; $i < mysql_num_rows($queryResult); $i++){
+		for($j = 0; $j < mysql_num_rows($queryResult); $j++){
 			if($i != $j){
 				$numP += $reseau->get_pathNum($i, $j);
 				$numI += $reseau->get_pathNum($i, $intervenantIdV) + $reseau->get_pathNum($intervenantIdV, $j);
