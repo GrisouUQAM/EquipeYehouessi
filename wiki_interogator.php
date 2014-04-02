@@ -12,7 +12,7 @@ videTables();
 //$creerBaseDonnee = $path.'/creerBaseDonnee.sql';
 //$query = "source $creerBaseDonnee" ;	
 //Mysql_Query($query);
-creerReseauFictif(50);
+//creerReseauFictif(50);
 		
 
 $user = $_GET["user"];
@@ -44,12 +44,12 @@ function getTalks($user) {
 }
 
 function insertTalks($userTalks, $user, $wikiUrl) { //permet d'inserer dans la table discussion la liste de toutes les discussions auxquelles le user a participe
-	$commentPrecedant="";
+	
 	foreach ($userTalks as $talk) {
 		$fixedTitle=mysql_real_escape_string($talk['title']);		
          $tab = explode(':',$fixedTitle,2);		 
-         $titreDiscussion = $tab[1] ;
-	
+        $titreDiscussion = $tab[1] ;
+         
 		
 		$query = "INSERT INTO grisou.discussion (discussionId, titre) VALUES (".$talk['pageid'].", '".$titreDiscussion ."')" ;		
 		Mysql_Query($query);
@@ -117,6 +117,7 @@ function videTables() {
 	mysql_query('TRUNCATE TABLE user;');
         mysql_query('TRUNCATE TABLE intervenants;');
         mysql_query('TRUNCATE TABLE liens;');
+        mysql_query('TRUNCATE TABLE centralites;');
 	//mysql_query('TRUNCATE TABLE comments;');
 }
 

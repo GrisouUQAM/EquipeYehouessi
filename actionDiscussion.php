@@ -14,32 +14,33 @@ $pageIdDiscus=$_POST["nomDiscussion"];
 $user =$_SESSION['user'];
 $wikiUrl = $_SESSION['wikiUrl'];
 
+
 require_once 'centraliteDegre.php';
 require_once 'centraliteInter.php';
 require_once 'centraliteProxi.php';
 require_once 'connectionDB.php';
 
-$listeUsersQuery = $wikiUrl."/w/api.php?action=query&prop=contributors&format=json&pclimit=500&ucnamespace=1&pageids=".$pageIdDiscus;
+/*$listeUsersQuery = $wikiUrl."/w/api.php?action=query&prop=contributors&format=json&pclimit=500&ucnamespace=1&pageids=".$pageIdDiscus;
 $listeUsers = file_get_contents($listeUsersQuery, true); //getQueryContent($listeUsersQuery);
 $objTalk = json_decode($listeUsers, true);
 $queryUsers = $objTalk['query'];
 $queryPages = $queryUsers['pages'];
 $queryPageId = $queryPages[$pageIdDiscus];
-$queryContributors = $queryPageId['contributors'];
+$queryContributors = $queryPageId['contributors'];*/
 connectToDB();
-//etablitReseau($queryContributors, $user, $pageIdDiscus);
-
 
 $query = "select intervenantId from intervenants where intervenantName='".$user."';";
 $ligne = mysql_query($query);
 $id = Mysql_fetch_array($ligne);   
-$intervenantId = $id["intervenantId"];  
-//$centraliteDegre=  degreeCentrality($intervenantId);
+$intervenantId = $id["intervenantId"];
 
+viderTable("centralites");
+viderTable("liens");
+viderTable("intervenants");
+etablitReseau($pageIdDiscus,$wikiUrl);
 
 // Obtention du nombre total de noeuds
 $nbNoeud = calculNbTotalNoeud();
-
 
 $inter = "I1";
 $centraliteDegre=  degreeCentrality($inter,$nbNoeud);
@@ -57,6 +58,7 @@ Mysql_Query($query);
 
 $resultCentralite=htmlResultCentralite($nomDiscussion,$centraliteDegre, $centraliteInter, $centraliteProxi);
 print $resultCentralite;
+
 
 
 
@@ -86,83 +88,273 @@ function htmlResultCentralite($nomDiscussion,$centraliteDegre, $centraliteInter,
     return $resultCentralite;
 }
 
-function etablitReseau($contributors, $user, $intervenantId, $pageIdDiscus ) { //permet d'inserer dans la table discussion la liste de toutes les discussions auxquelles le user a participe
-	
-       $i=0;     
-	foreach ($contributors as $contributor) {        
-            $userId=$contributor['userid'];
-        	$userName=$contributor['name'];      
-	
-        $un= 1;
-        $zero=0;   
-        if($userName != $user) {
-           $userNameChar ='"'.$userName.'"' ;
-           $userChar='"'.$user.'"' ;
-            $query = "insert into grisou.intervenants(intervenantId,intervenantName,intervenantAuteurArticle) values(".$userId.",".$userNameChar.",".$zero.");";
-          	Mysql_Query($query);
-            $query = "insert into grisou.liens(lienId,discussionId,debutLienId,debutLien,finLienId,finLien,poids) values(".$i.",".$pageIdDiscus.",".$intervenantId.",".$userChar.",".$userId.",".$userNameChar.",".$un.");";
-	    Mysql_Query($query);
-	    $i=$i+1;
-        }
+function etablitReseau($pageIdDiscus,$wikiUrl ) {
+$resultat=array(); 
+$nuArchive=0;
+$archiveValide=1;
+while($archiveValide==1){
+if($nuArchive==0){
+   $pageId = $pageIdDiscus; 
+}else {
+    $pageId = $resultat[1];
+}
 
-        }
+$urlNbSection= $wikiUrl."/w/api.php?action=parse&pageid=".$pageId."&prop=sections&format=json";    
+$nbSection = file_get_contents($urlNbSection, true); //getQueryContent($listeUsersQuery);
+$objTalk = json_decode($nbSection, true);
+$section = $objTalk['parse'];
+$nbSection = count($section['sections']);
+$nbSectionNum =(int)$nbSection;
+    
+for ($nuSection=1; $nuSection<$nbSectionNum+1;$nuSection++) {
+    
+     //for ($i=0; $i<$nbIntervenantFictif;$i++) {
+    $arrayUsers = array();//ou je peux faire un unset :a la fin et une initialisation avant le debut de la section    
+    $section="&section=";
+   //$section="§section=";
+   $urlUserMemeTalk= $wikiUrl."/w/api.php?action=parse&pageid=".$pageId.$section.$nuSection."&format=json";
+   //$urlUserMemeTalk=html_entity_decode($urlUserMemeTalk);
+   //$urlUserMemeTalk=urlencode($urlUserMemeTalk);
+   //$urlUserMemeTalk=htmlspecialchars($urlUserMemeTalk);
+   //$urlUserMemeTalk=  htmlentities($urlUserMemeTalk);
+   //$urlUserMemeTalk= html_entity_decode($urlUserMemeTalk);
+   
+   
+   $nbSection = file_get_contents($urlUserMemeTalk); //getQueryContent($listeUsersQuery);
+  // echo $nbSection;
+   
+   $objTalk = json_decode($nbSection, true);
+   $parser = $objTalk['parse'];
+   $links = $parser['links'];
+   $links1= serialize($links);
+   
+   $nbUsers = sizeof($links);
+   
+   for($i=0;$i<$nbUsers;$i++){
+       $userI=$links[$i];
+       $userRelation= $userI['*'];
+    //   echo $userRelation;
+        if(strpos($userRelation,"User")=== FALSE){
+        } else{
+         $tab = explode(':',$userRelation);		 
+         $userRelation = $tab[1] ;
+        $arrayUsers[$userRelation]=1;// ca va reecraser de sorte que je n'aurai pas de duplication
+       //echo $userRelation." XXX  "; 
+       }   
+   }
+   creerLiens($wikiUrl,$arrayUsers,$nuSection,$pageIdDiscus,$nuArchive);
+   
+}
 
+$nuArchive=$nuArchive+1;
+$resultat=valideArchive($wikiUrl,$nuArchive,$pageIdDiscus);
+$archiveValide = $resultat[0];
+/*$nuArchive=0;
+$archiveValide=0;*/
+
+}
 }
 
 
-/*function lienTotal() {
-    $NBDISCUSSMAX = 50;
-    $NBUSERSMAX = 50;
+function trouverNomDiscussion($discussionId){
+            $query = "select titre as titre from discussion where discussionId=".$discussionId.";";
+     //   echo $query;
+        $queryResult = Mysql_Query($query);
+        $titre = mysql_fetch_assoc($queryResult);
+        //echo $titre['titre'];
+        return $titre['titre'];
     
-    $nbDiscus = 0;
-    $nbUser = 0;
-    i=0;
-    userDepart=cequieaetemissurleformulaire;
-    limite=ok;
-    WHILE(  limite==ok)' {
-        
-            getListeDiscussion(userDepart))//select listeDiscussion where user=userDepart  modifier la table discussio pour mette le userId et leuserNAE
-    for(discussion)
-        $chaqueuser= getListeUser(discussion) faire tout ca avec des fetch
-        for(chaqueUser)
-        ajouter au fur et a mesure les nouveaux users
-            link(userDepart,chaqueUser,discuss)
-    je quitte les deux bcoules(je pourrai mettre une limite pour chaque discussion et une limite pour chaque user à prendre par discussion0
-    checke la limite si limite non atteint 
-    i=i+1;
-    userDepart=fetch[i] je prends le user 1 de la tables des user ainsi de suite
-    le probleme en faissant ca c'est que je fausse les calculs de centralite car l'aurai toujours un nombre constant
-        ou je vais carrement prendre des nombres random faire tout ca d'ici vendredi c'est tout'
-        si je fais le reseau par discussio il faut que je trouve une facon de ne pas mettre tout
-        le monde en contact et
-    
+}
+
+
+
+function valideArchive($wikiUrl,$nuArchive,$pageIdDiscussion){
+    $resultat=array();
+    $nameDiscussion = trouverNomDiscussion($pageIdDiscussion);
+    $pageIdent=" ";
+    $nameDiscussion=urlencode($nameDiscussion);
+     $urlarchive = $wikiUrl."/w/api.php?action=query&titles=Talk:".$nameDiscussion."/Archive_".$nuArchive."&format=json";
      
-
-            
-                    
-    if($userName != $user) {
-           $userNameChar ='"'.$userName.'"' ;
-           $userChar='"'.$user.'"' ;
-            $query = "insert into grisou.intervenants(intervenantId,intervenantName,intervenantAuteurArticle) values(".$userId.",".$userNameChar.",".$zero.");";
-          	Mysql_Query($query);
-            $query = "insert into grisou.liens(lienId,discussionId,debutLien,finLien,poids) values(".$i.",".$pageIdDiscus.",".$userChar.",".$userNameChar.",".$un.");";
-	    Mysql_Query($query);
-	    $i=$i+1;
-        }
+     //$urlarchive=html_entity_decode($urlarchive);
+   //$urlarchive=urlencode($urlarchive);
+   //$urlarchive=htmlspecialchars($urlarchive);
+   //$urlarchive=  htmlentities($urlarchive);
+   //$urlarchive= html_entity_decode($urlarchive);
+     
+     
+     
+     $archiveExiste = file_get_contents($urlarchive, true); //getQueryContent($listeUsersQuery);
     
+     $objTalk = json_decode($archiveExiste, true);
+     $stringObjetTalk = serialize($objTalk);
+     
+     if(strpos($stringObjetTalk,"missing")===FALSE){
+        $query = $objTalk['query'];
+        $page = $query['pages'];
+        foreach ($page as $value) {
+            $pageIdent = $value['pageid'];
+        }
+     //   echo $pageIdent;
+        $resultat[0]=1;
+        $resultat[1]=$pageIdent;
+    } else{
+        $resultat[0]=0;
+        $resultat[1]="nothing";
+       // echo "nothing";
+    }
+    return $resultat;
 }
-function getPageId() {
-	$sql = "SELECT pageId
-	  FROM comments
-	  GROUP BY pageId
-	  ORDER BY pageId";
 
 
-	return mysql_query($sql);
-}
 
-$pages=getPageId();
-	while($pageIdRecord = Mysql_fetch_array($pages))*/
+
+ function viderTable($nomTable){
+     $query = "TRUNCATE TABLE ".$nomTable.";";
+     //echo $query;
+         mysql_query($query);
+ }
+ 
+
+function creerLiens($wikiUrl,$arrayUsers,$nuSectionSection,$pageIdDiscus,$nuArchive){
+    // il me faut une variable pour recuperer le dernier index du lien et pouvoir continuer a mettre des liens dedans
+    foreach ($arrayUsers as $intervenantName => $intervenantId) {        
+        $arrayUsers[$intervenantName] = chercherIdIntervenants($wikiUrl,$intervenantName);        
+        
+    }
+  //  print_r($arrayUsers);
+    //XXXXXXXXXXXXXXXX A RESOUDRE LE ID A ETE COUPE QUAND C'EST UN USERID IP et auss APPAREMEMENT LE NOMBRE DE SECTION N'EST PAS MIS A JOUR NE SE FAIT QUE POUR UNE SEULE SECTION
+    $un= 1;
+    $zero=0;   
+    foreach($arrayUsers as $intervenantName => $intervenantId) {
+       $userNameChar ='"'.$intervenantName.'"' ;
+       $userChar='"'.$intervenantId.'"' ;
+       $query = "insert into grisou.intervenants(intervenantId,intervenantName,intervenantAuteurArticle) values(".$userChar.",".$userNameChar.",".$zero.");";
+       
+       Mysql_Query($query);
+    }    
+    $lastIndex = chercherLastIndexTableLiens();
+    $tailleUser = sizeof($arrayUsers);
+    //echo $tailleUser;
+    $arrayLiensExits=array();
+    for($i=0;$i<$tailleUser ;$i++) {
+        for($j=0;$j<$tailleUser ;$j++) {
+    $arrayCles = array_keys($arrayUsers);          
+    $intervenantName1= $arrayCles[$i];  
+    $intervenantName2= $arrayCles[$j];
+   // echo  $intervenantName1;
+    //echo  $intervenantName2;
+    
+    $arrayLiensExits = array();
+    
+
+    
+    //TROUVER LA VARIABLE INTERVENNATS ID
+    if(liensExits( $intervenantName1,$intervenantName2,$arrayLiensExits)== 1){
+    $concat = $intervenantName1.$intervenantName2;
+    
+    $arrayLiensExits[$concat] = " ";
+    $intervenantNameChar1 ='"'.$intervenantName1.'"' ;
+    $intervenantNameChar2 ='"'.$intervenantName2.'"' ;
+    $intervenantId1 = chercherIdintervenantsDsTable($intervenantName1);
+    $intervenantId2 = chercherIdintervenantsDsTable($intervenantName2);
+    $query = "insert into grisou.liens(lienId,discussionId,debutLienId,debutLien,finLienId,finLien,poids) values(".$lastIndex.",".$pageIdDiscus.",".$intervenantId1.",".$intervenantNameChar1.",".$intervenantId2.",".$intervenantNameChar2.",".$un.");";
+    Mysql_Query($query);
+    $lastIndex=$lastIndex+1;
+    }
+    }
+    }
+   // print_r($arrayLiensExits);
+    
+   
+ }
+    
+ function chercherIdintervenantsDsTable($intervenantName){
+     $intervenantNameChar1 ='"'.$intervenantName.'"' ;
+        $query = "select intervenantId as userId from intervenants where intervenantName=".$intervenantNameChar1.";";
+        //echo $query;
+        $queryResult = Mysql_Query($query);
+        $userId = mysql_fetch_assoc($queryResult);
+       // echo $userId['userId'];
+        return $userId['userId'];
+      
+ }
+ 
+    function chercherIdIntervenants($wikiUrl,$intervenantName){
+      $urlUserId = $wikiUrl."/w/api.php?action=query&list=users&ususers=".$intervenantName."&format=json";
+   //   echo $urlUserId;
+$userId = file_get_contents($urlUserId, true); //getQueryContent($listeUsersQuery);
+$objTalk = json_decode($userId, true);
+
+$query = $objTalk['query'];
+$user = $query['users'];
+//echo serialize($user);
+$userFirst=$user[0];
+$chercher = serialize($userFirst);
+$id=" ";
+ if(strpos($chercher,"userid")=== FALSE){
+     $id =  $id = $userFirst['name'];
+        } else{
+         $id = $userFirst['userid'];
+       }   
+
+//{"query":{"users":[{"userid":19278935,"name":"Titamation"}]}}
+return $id;//
+    }
+        
+    function chercherLastIndexTableLiens() {
+        
+        $query = "select MAX(lienId) as lastIndex from liens;";
+        $queryResult = Mysql_Query($query);
+        $lastIndex = mysql_fetch_assoc($queryResult);
+        if ($lastIndex == 0) {
+            return 0;
+        } else {
+            return $lastIndex['lastIndex']+1;
+        }
+    }
+    
+    
+    
+       
+  
+    function liensExits( $intervenantName1,$intervenantName2,$arrayLiensExits){
+         
+    $retour =1;
+         if($intervenantName1==$intervenantName2){
+             $retour=0;
+         } else {
+         $concat1 = $intervenantName1.$intervenantName2;
+    $concat2 = $intervenantName1.$intervenantName2;
+    if ((array_key_exists($concat1,$arrayLiensExits))||(array_key_exists($concat2,$arrayLiensExits))) {
+        $retour = 0;
+    }
+         }
+      //   echo $retour;
+         return $retour;
+         
+         
+         
+    }
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+     
+function toDo() {
+    /*TRAITER LE CAS DE DIVISIONS PAR ZERO DANS LE CALCUL DES CENTRALITE
+   
+     * IL Y A DES REDONDANCES QU'IL FAUDRAIT ELIMINER MA FONCTION LIENS 
+    MODIFIER LA TABLE LIENS POUR METTRE LES NU SECTION ET numero archive etc AUTRES
+     * les IP QUI SONTCOUPES COMME ID A REGLER AUSSI
+    ISCREATOR OU NON AUSSI */
+ }
+
 
 
 
