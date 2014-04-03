@@ -45,22 +45,20 @@ function getTalks($user) {
 
 function insertTalks($userTalks, $user, $wikiUrl) { //permet d'inserer dans la table discussion la liste de toutes les discussions auxquelles le user a participe
 	
-	foreach ($userTalks as $talk) {
-		$fixedTitle=mysql_real_escape_string($talk['title']);		
-         $tab = explode(':',$fixedTitle,2);		 
+    foreach ($userTalks as $talk) {
+	$fixedTitle=mysql_real_escape_string($talk['title']);		
+        $tab = explode(':',$fixedTitle,2);		 
         $titreDiscussion = $tab[1] ;
          
+	$query = "INSERT INTO grisou.discussion (discussionId, titre) VALUES (".$talk['pageid'].", '".$titreDiscussion ."')" ;		
+	Mysql_Query($query);
 		
-		$query = "INSERT INTO grisou.discussion (discussionId, titre) VALUES (".$talk['pageid'].", '".$titreDiscussion ."')" ;		
-		Mysql_Query($query);
-				
-		$query = "INSERT INTO grisou.user (userId, userName) VALUES (".$talk['userid'].", '".$talk['user'] ."')";
-		Mysql_Query($query);
-                $zero=0;
-                $query = "insert into grisou.intervenants(intervenantId,intervenantName,intervenantAuteurArticle) values(".$talk['userid'].", '".$talk['user'] ."',".$zero.");";
-	        Mysql_Query($query);
-
-     }
+	$query = "INSERT INTO grisou.user (userId, userName) VALUES (".$talk['userid'].", '".$talk['user'] ."')";
+	Mysql_Query($query);
+        $zero=0;
+        $query = "insert into grisou.intervenants(intervenantId,intervenantName,intervenantAuteurArticle) values(".$talk['userid'].", '".$talk['user'] ."',".$zero.");";
+        Mysql_Query($query);
+    }
      //insertRelatedUsers( $user,$wikiUrl);
 }
 
@@ -70,7 +68,7 @@ function insertTalks($userTalks, $user, $wikiUrl) { //permet d'inserer dans la t
 function printUserTalks($talks, $user) {
     $listeDiscussion = "listeDiscussion";
 	
-	$result = "<h2>Discussions auxquelles <span style='color:blue;'>" . $user . "</span> a contribu&eacute;</h2>
+    $result = "<h2>Discussions auxquelles <span style='color:blue;'>" . $user . "</span> a contribu&eacute;</h2>
       <p style='color:blue;'>Cliquez sur une ligne pour choisir une discussion.<p>
       <table class='tbl_result' width='100%' >
       <tr>            
@@ -92,7 +90,7 @@ function printUserTalks($talks, $user) {
         $envoi = '"'."envoiDiscussion(this)".'"';
     	$pageId = $row["discussionId"];
 		$pageTitle = $row["titre"];		
-		$isTalkCreator = "Non";
+		$isTalkCreator = " ";
 		 		
 		$result .= "<tr class='res' onclick = $envoi>";               
 		$result .= "<td class='res' width='20%' >" . $pageId . "</td>";
@@ -108,19 +106,16 @@ function printUserTalks($talks, $user) {
 	print $result;		
 }
 
-
 function videTables() {
     
     // on vide les tables � chaque nouvelle connection
-	//mysql_query('TRUNCATE TABLE page;');
-	mysql_query('TRUNCATE TABLE discussion;');
-	mysql_query('TRUNCATE TABLE user;');
-        mysql_query('TRUNCATE TABLE intervenants;');
-        mysql_query('TRUNCATE TABLE liens;');
-        mysql_query('TRUNCATE TABLE centralites;');
-	//mysql_query('TRUNCATE TABLE comments;');
+    mysql_query('TRUNCATE TABLE discussion;');
+    mysql_query('TRUNCATE TABLE user;');
+    mysql_query('TRUNCATE TABLE intervenants;');
+    mysql_query('TRUNCATE TABLE liens;');
+    mysql_query('TRUNCATE TABLE centralites;');
+        
 }
-
 
 function getQueryContent($queryUrl) {
 	return file_get_contents($queryUrl, true);
