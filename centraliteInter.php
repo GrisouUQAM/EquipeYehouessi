@@ -1,8 +1,12 @@
 <?php
 include('floyd.php');
 function centraliteInter($idIntervenant, $nbNoeud) {
-	$degree = numPaths($idIntervenant)/(($nbNoeud-1)*($nbNoeud-2));
-	return $degree;
+	if(numPaths($idIntervenant) <= 0){
+		return 0;
+	} else {
+		$degree = numPaths($idIntervenant)/(($nbNoeud-1)*($nbNoeud-2));
+		return $degree;
+	}
 }
 
 function creerGraphe(){
@@ -52,6 +56,9 @@ function numPaths($intervenantIdV){
 		}
 	}
 	
+	$num = $numP/$numI;
+	return $num;
+	
 	//PHP n'aime pas beaucoup les double boucles while avec mysql_fetch_assoc
 	/*$query = "SELECT *  from (((select distinct debutLienId as noeuds from liens ) 
 			union (select distinct finLienId as noeuds from liens))as tableNoeud);";
@@ -70,9 +77,6 @@ function numPaths($intervenantIdV){
 			}
 		}
 	}*/
-	
-	$num = $numP/$numI;
-	return $num;
 }
 
 /*function numPaths($intervenantIdV){
