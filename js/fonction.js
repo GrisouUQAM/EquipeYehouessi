@@ -25,7 +25,8 @@ function sendForm() {
 	return false;
 }
 
-function envoiDiscussion(element) {
+function envoiDiscussion(element) {    
+    document.getElementById("box-section-content-bottom").innerHTML="<div id='icoCentraliteLoading'><img src='images/miniloading.gif' style='height:28px;' /> </div>";
     var y = element.innerHTML;
     var String=y.substring((y.indexOf(">")+1),(y.indexOf("/")-1));       
     var discussion = "nomDiscussion="+String;
@@ -33,7 +34,13 @@ function envoiDiscussion(element) {
     var url = "actionDiscussion.php";   
     $("#icoCentraliteLoading").fadeIn("fast");
    // $("#box_result").fadeOut("fast");
-        
+   
+   //document.getElementById("box-section-content-bottom").innerHTML=" ";
+     //$("#icoCentraliteLoading").fadeOut("slow");
+   
+     
+    
+    
 if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
   xmlhttp=new XMLHttpRequest();
 } else {// code for IE6, IE5
@@ -49,8 +56,6 @@ xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
  xmlhttp.onreadystatechange=function() {
    if (xmlhttp.readyState==4 && xmlhttp.status==200){
      document.getElementById("box-section-content-bottom").innerHTML=xmlhttp.responseText;
-     alert(http.responseText);
-  //   $("#box_result").fadeIn("slow");
      $("#icoCentraliteLoading").fadeOut("slow");
      }
    }

@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS `user` (
 
 DROP TABLE IF EXISTS `intervenants`;
 CREATE TABLE `intervenants` (
-`intervenantId` int(11) NOT NULL,
+`intervenantId` varchar(100) NOT NULL,
 `intervenantName` varchar(100) NOT NULL,
 `intervenantAuteurArticle` int(11) not null,
 PRIMARY KEY (`intervenantId`)
@@ -59,18 +59,20 @@ PRIMARY KEY (`intervenantId`)
 DROP TABLE IF EXISTS `liens`;
 
 CREATE TABLE `liens`(
-`lienId` int(11) NOT NULL,
 `discussionId` int(11) NOT NULL,
-`debutLienId` int(11) NOT NULL,
+`debutLienId` varchar(100) NOT NULL,
 `debutLien` varchar(100) NOT NULL,
-`finLienId` int(11) NOT NULL,
+`finLienId` varchar(100) NOT NULL,
 `finLien` varchar(100) NOT NULL,
 `poids` int(11) NOT NULL,
-PRIMARY KEY (`lienId`),
+`noSection` int(11) NOT NULL,
+`noArchive` int(11) NOT NULL,
+PRIMARY KEY (`discussionId`,`debutLienId`,`debutLien`,`finLienId`,`finLien`,`noSection`,`noArchive`),
 CHECK (debutLien != finLien),
 check (debutLien IN (SELECT intervenantId from intervenants)) ,
 check (finLien IN (SELECT intervenantId from intervenants))
 )ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
 
 DROP TABLE IF EXISTS `centralites`;
 

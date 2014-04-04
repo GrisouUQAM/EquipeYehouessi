@@ -33,7 +33,7 @@ function creerReseauFictif($nbIntervenantFictif) {
 			$concat2 = $pare.$concat2.$pare;
                         $discusId=0; //pageId de la discussion
 			if(($lienCree[$intervenantAleatoire] == 0)){ 
-			     $query = "insert into grisou.liens(lienId,discussionId,debutLienId,debutLien,finLienid,finLien,poids) values(".$j.",".$discusId.",".$i.",".$concat1.",".$intervenantAleatoire.",".$concat2.",".$un.");";
+			     $query = "insert into grisou.liens(lienId,discussionId,debutLienId,debutLien,finLienId,finLien,poids,noSection,noArchive) values(".$j.",".$discusId.",".$i.",".$concat1.",".$intervenantAleatoire.",".$concat2.",".$un.",0,0);";
 		         Mysql_Query($query);
 				 $j= $j+1;
 			}
