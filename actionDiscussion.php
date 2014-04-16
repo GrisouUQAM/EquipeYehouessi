@@ -29,7 +29,6 @@ $intervenantId = $id["userId"];
 viderTable("centralites");
 viderTable("liens");
 viderTable("intervenants");
-echo $intervenantId;
 insererUserDansTableIntervenant($user,$intervenantId);
 etablitReseau($pageIdDiscus,$wikiUrl);
 
@@ -253,9 +252,7 @@ function chercherLastIndexTableLiens() {
 }
      
 function toDo() {
-    /*TRAITER LE CAS DE DIVISIONS PAR ZERO DANS LE CALCUL DES CENTRALITE
-   
-     *ISCREATOR OU NON AUSSI */
+    /* ISCREATOR OU NON */
 }
 
 ?>

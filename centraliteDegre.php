@@ -7,10 +7,12 @@ function centraliteDegre($idIntervenant,$nbNoeud){
 	$numLink = mysql_fetch_assoc($numLink_column);
 
 	// calcul de la centralite
-	$degree = $numLink['totalLink']/($nbNoeud-1);
-
-	//echo $degree."<br>";
-	return $degree;
+	if($numLink['totalLink'] <= 0){
+		return 0;
+	} else {
+		$degree = $numLink['totalLink']/($nbNoeud-1);
+		return $degree;
+	}
 }
 
 

@@ -1,8 +1,12 @@
 <?php
 function centraliteProxi($intervenantIdI, $nbNoeud) {
 	// calcul de la centralite
-	$degree = ($nbNoeud-1)/sumDist($intervenantIdI);
-	return $degree;
+	if(sumDist($intervenantIdI) <= 0){
+		return 0;
+	} else {
+		$degree = ($nbNoeud-1)/sumDist($intervenantIdI);
+		return $degree;
+	}
 }
 
 function sumDist($intervenantIdI) {
