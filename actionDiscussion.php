@@ -12,9 +12,11 @@ $user = $_SESSION['user'];
 $wikiUrl = $_SESSION['wikiUrl'];
 
 require_once 'centraliteDegre.php';
-//require_once 'centraliteInter.php';
+require_once 'centraliteInter.php';
 require_once 'centraliteProxi.php';
 require_once 'connectionDB.php';
+require_once 'floyd.php';
+require_once 'fonctionsCentralite.php';
 
 //$listeUsersQuery = $wikiUrl."/w/api.php?action=query&prop=contributors&format=json&pclimit=500&ucnamespace=1&pageids=".$pageIdDiscus;
 connectToDB();
@@ -34,9 +36,9 @@ etablitReseau($pageIdDiscus,$wikiUrl);
 // Obtention du nombre total de noeuds
 $nbNoeud = calculNbTotalNoeud();
 
-$centraliteDegre = degreeCentrality($intervenantId,$nbNoeud);
-$centraliteInter = 0;//centraliteInter($intervenantId,$nbNoeud);
-$centraliteProxi = centraliteProxi($intervenantId,$nbNoeud);
+$centraliteDegre = centraliteDegre($intervenantId, $nbNoeud);
+$centraliteInter = centraliteInter($intervenantId, $nbNoeud);
+$centraliteProxi = centraliteProxi($intervenantId, $nbNoeud);
 
 $query = "select titre from discussion where discussionId=".$pageIdDiscus.";";
 $ligne = mysql_query($query);
