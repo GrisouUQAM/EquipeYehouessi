@@ -76,7 +76,7 @@ check (finLien IN (SELECT intervenantId from intervenants))
 
 DROP TABLE IF EXISTS `centralites`;
 
-CREATE TABLE `Centralites`(
+CREATE TABLE `centralites`(
 `userId` int(11) NOT NULL,
 `centraliteDegre` double(20,5) NOT NULL,
 `centraliteInter` double(20,5) NOT NULL,
