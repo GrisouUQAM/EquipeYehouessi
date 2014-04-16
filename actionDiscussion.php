@@ -209,7 +209,6 @@ function creerLiens($wikiUrl,$arrayUsers,$nuSection,$pageIdDiscus,$nuArchive){
         $userChar='"'.$userId.'"' ;
         $zero=0;   
         $query = "insert into grisou.intervenants(intervenantId,intervenantName,intervenantAuteurArticle) values(".$userChar.",".$userNameChar.",".$zero.");";
-        echo $query;
         Mysql_Query($query);
     }
     
