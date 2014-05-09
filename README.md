@@ -26,12 +26,9 @@ The code uses code provided by **Google-Diff, Match and Patch** for revision com
 
 ## Contributors
 
-* Laurence Loiselle Dupuis
-* Melanie Lord
-* Daniel Memmi
-* Normand Seguin
-* Nguyen Tho Hau
-* Sylvie Trudel
+* Isabelle Metoevi
+* Phannarat Horng
+
 
 
 
@@ -66,9 +63,24 @@ Notre projet utilise le code fourni par **Google-Diff, Match and Patch** pour fa
 
 ## Contributeurs
 
-* Laurence Loiselle Dupuis
-* Melanie Lord
-* Daniel Memmi
-* Normand Seguin
-* Nguyen Tho Hau
-* Sylvie Trudel
+* Isabelle Metoevi
+* Phannarat Horng
+
+
+Les requêtes avec Wikipedia se font par l'API Wiki, voir http://en.wikipedia.org/w/api.php 
+pour plus de détails.
+
+Le logiciel a été développé et testé avec le site http://en.wikipedia.org
+Il faudra l'adapter légèrement afin de tenir compte de la langue. 
+
+Autre point, on a constaté que l’intervenant pour lequel on effectue nos calculs 
+peut faire de la liste des intervenants de la page d’une discussion sans pour autant
+avoir été en interaction avec d’autres personnes dans la discussion. 
+D’où des résultats de centralités de degré parfois nul. Dans Wikipédia 
+il existe des Superutilisateurs qui ont la permission de modifier le talk d’un article
+sans toutefois être en lien avec d’autres personnes. Nous avons prévu le cas où
+on ne voudrait lister que les discussions auxquelles notre intervenant est en interaction
+avec d’autres personnes. Pour cela il suffira de ne pas mettre 
+en commentaire la fonction aParticipeDiscussion dans le fichier wiki_interrogator.php
+Toutefois, le temps de traitement peut être relativement long. 
+

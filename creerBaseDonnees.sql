@@ -1,16 +1,6 @@
-
     
 SET SQL_MODE = 'NO_AUTO_VALUE_ON_ZERO';
 SET time_zone = '+00:00';
-
-
-
-
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8 */;
-
 
 /*--
 -- Base de données: `grisou`
@@ -18,12 +8,9 @@ SET time_zone = '+00:00';
 CREATE DATABASE IF NOT EXISTS `grisou` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
 USE `grisou`;
 
-
-
 /*--
 -- Structure de la table `discussion`
 --*/
-
 
 CREATE TABLE IF NOT EXISTS `discussion` (
   `discussionId` int(11) NOT NULL,
@@ -31,12 +18,9 @@ CREATE TABLE IF NOT EXISTS `discussion` (
   PRIMARY KEY (`discussionId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-
-
 /*--
 -- Structure de la table `user`
 --*/
-
 
 CREATE TABLE IF NOT EXISTS `user` (
   `userId` int(11) NOT NULL,
@@ -46,8 +30,6 @@ CREATE TABLE IF NOT EXISTS `user` (
   KEY `userName_2` (`userName`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;    
     
-
-
 DROP TABLE IF EXISTS `intervenants`;
 CREATE TABLE `intervenants` (
 `intervenantId` varchar(100) NOT NULL,
@@ -72,7 +54,6 @@ CHECK (debutLien != finLien),
 check (debutLien IN (SELECT intervenantId from intervenants)) ,
 check (finLien IN (SELECT intervenantId from intervenants))
 )ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
 
 DROP TABLE IF EXISTS `centralites`;
 

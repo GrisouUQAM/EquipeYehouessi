@@ -1,10 +1,10 @@
 <?php
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-//http://en.wikipedia.org/w/api.php */
+/**
+* @author Isabelle Metoevi
+* @date $Date: 2014/03/01
+**/
+
 
 session_start();
 $pageIdDiscus = $_POST["nomDiscussion"];
@@ -18,7 +18,6 @@ require_once 'connectionDB.php';
 require_once 'floyd.php';
 require_once 'fonctionsCentralite.php';
 
-//$listeUsersQuery = $wikiUrl."/w/api.php?action=query&prop=contributors&format=json&pclimit=500&ucnamespace=1&pageids=".$pageIdDiscus;
 connectToDB();
 
 $query = "select userId from user where userName='".$user."';";
@@ -26,13 +25,14 @@ $ligne = mysql_query($query);
 $id = Mysql_fetch_array($ligne);   
 $intervenantId = $id["userId"];
 
+// On vide les tables ci après car une nouvelle discussion  a été sélectionnée.
 viderTable("centralites");
 viderTable("liens");
 viderTable("intervenants");
 insererUserDansTableIntervenant($user,$intervenantId);
 etablitReseau($pageIdDiscus,$wikiUrl);
 
-// Obtention du nombre total de noeuds
+// Obtention du nombre total d'intervenants autrement le nombre de noueds
 $nbNoeud = calculNbTotalNoeud();
 
 $centraliteDegre = centraliteDegre($intervenantId, $nbNoeud);
@@ -50,12 +50,11 @@ Mysql_Query($query);
 $resultCentralite=htmlResultCentralite($nomDiscussion,$centraliteDegre, $centraliteInter, $centraliteProxi);
 print $resultCentralite;
 
-
 function calculNbTotalNoeud() {
-     $query="SELECT count(*) as totalNode from (((select distinct debutLienId from liens ) union (select distinct finLienId from liens))as tableCommune);";
-     $queryResult = Mysql_Query($query);
-     $tableNbNoeud = mysql_fetch_assoc($queryResult);
-     return $tableNbNoeud['totalNode'];
+    $query="SELECT count(*) as totalNode from (((select distinct debutLienId from liens ) union (select distinct finLienId from liens))as tableCommune);";
+    $queryResult = Mysql_Query($query);
+    $tableNbNoeud = mysql_fetch_assoc($queryResult);
+    return $tableNbNoeud['totalNode'];
 }
 
 function htmlResultCentralite($nomDiscussion,$centraliteDegre, $centraliteInter, $centraliteProxi) {
@@ -75,6 +74,12 @@ function htmlResultCentralite($nomDiscussion,$centraliteDegre, $centraliteInter,
     return $resultCentralite;
 }
 
+/* Cette fonction permet de créer le réseau d'intervenants pour chaque discussion selectionnée
+ * pour chaque archive et pages actuelles de la discussion on recherche les intervennats qui y sont intervenus
+ * on met en lien tous les intervenants ayant fait une intervention sur un sujet ou une question
+ * dans le talk de la discussion. Ces derniers peuvent avoir répondu l'un à l'autre ou donné 
+ * leur avis sur le sujet .Wikipedia classe ces questions par section
+ */
 function etablitReseau($pageIdDiscus,$wikiUrl ) {
     $resultat=array(); 
     $nuArchive=0;
@@ -86,17 +91,17 @@ function etablitReseau($pageIdDiscus,$wikiUrl ) {
             $pageId = $resultat[1];
         }
         $urlNbSection= $wikiUrl."/w/api.php?action=parse&pageid=".$pageId."&prop=sections&format=json";    
-        $nbSection = file_get_contents($urlNbSection, true); //getQueryContent($listeUsersQuery);
+        $nbSection = file_get_contents($urlNbSection, true); 
         $objTalk = json_decode($nbSection, true);
         $section = $objTalk['parse'];
         $nbSection = count($section['sections']);
         $nbSectionNum =(int)$nbSection;
     
         for ($nuSection=1; $nuSection<$nbSectionNum+1;$nuSection++) {    
-            $arrayUsers = array();//ou je peux faire un unset :a la fin et une initialisation avant le debut de la section    
+            $arrayUsers = array();
             $section = "&section=";
             $urlUserMemeTalk = $wikiUrl."/w/api.php?action=parse&pageid=".$pageId.$section.$nuSection."&format=json";
-            $nbSection = file_get_contents($urlUserMemeTalk); //getQueryContent($listeUsersQuery);
+            $nbSection = file_get_contents($urlUserMemeTalk); 
             $objTalk = json_decode($nbSection, true);
             $parser = $objTalk['parse'];
             $links = $parser['links'];
@@ -105,10 +110,10 @@ function etablitReseau($pageIdDiscus,$wikiUrl ) {
                 $userI=$links[$i];
                 $userRelation= $userI['*'];
                 if(strpos($userRelation,"User")=== FALSE){
-                } else{
+                } else {
                     $tab = explode(':',$userRelation);		 
                     $userRelation = $tab[1] ;
-                    $arrayUsers[$userRelation]=1;// ca va reecraser de sorte que je n'aurai pas de duplication
+                    $arrayUsers[$userRelation]=1;
                 }   
             }
             creerLiens($wikiUrl,$arrayUsers,$nuSection,$pageIdDiscus,$nuArchive);
@@ -131,9 +136,9 @@ function valideArchive($wikiUrl,$nuArchive,$pageIdDiscussion){
     $nameDiscussion = trouverNomDiscussion($pageIdDiscussion);
     $pageIdent=" ";
     $nameDiscussion=urlencode($nameDiscussion);
-     $urlarchive = $wikiUrl."/w/api.php?action=query&titles=Talk:".$nameDiscussion."/Archive_".$nuArchive."&format=json";
+    $urlarchive = $wikiUrl."/w/api.php?action=query&titles=Talk:".$nameDiscussion."/Archive_".$nuArchive."&format=json";
      
-    $archiveExiste = file_get_contents($urlarchive, true); //getQueryContent($listeUsersQuery);
+    $archiveExiste = file_get_contents($urlarchive, true); 
     $objTalk = json_decode($archiveExiste, true);
     $stringObjetTalk = serialize($objTalk);
     if(strpos($stringObjetTalk,"missing")===FALSE){
@@ -156,9 +161,6 @@ function viderTable($nomTable){
     mysql_query($query);
 }
 
-
-
-
 function creerLiens($wikiUrl,$arrayUsers,$nuSection,$pageIdDiscus,$nuArchive){
     $query=array();
     foreach ($arrayUsers as $intervenantName => $intervenantId) {        
@@ -172,9 +174,7 @@ function creerLiens($wikiUrl,$arrayUsers,$nuSection,$pageIdDiscus,$nuArchive){
         $query = "insert into grisou.intervenants(intervenantId,intervenantName,intervenantAuteurArticle) values(".$userChar.",".$userNameChar.",".$zero.");";
         Mysql_Query($query);
     }    
-
     $tailleUser = sizeof($arrayUsers);
-    //$lastIndex = chercherLastIndexTableLiens();
     for($i=0;$i<$tailleUser ;$i++) {
         for($j=0;$j<$tailleUser ;$j++){
             $arrayCles = array_keys($arrayUsers);          
@@ -188,28 +188,23 @@ function creerLiens($wikiUrl,$arrayUsers,$nuSection,$pageIdDiscus,$nuArchive){
             $intervenantIdChar2 ='"'.$intervenantId2.'"' ;
             $interAlphabetique = strcmp($intervenantName1,$intervenantName2);
             if($interAlphabetique<0){                
-                //$lastIndex = $lastIndex+1;
                 $query = "insert into grisou.liens(discussionId,debutLienId,debutLien,finLienId,finLien,poids,noSection,noArchive) values(".$pageIdDiscus.",".$intervenantIdChar1.",".$intervenantNameChar1.",".$intervenantIdChar2.",".$intervenantNameChar2.",".$un.",".$nuSection.",".$nuArchive.");";
                 Mysql_Query($query);
-            }else if($interAlphabetique>0){  
-              //  $lastIndex = $lastIndex+1;
-                  $query = "insert into grisou.liens(discussionId,debutLienId,debutLien,finLienId,finLien,poids,noSection,noArchive) values(".$pageIdDiscus.",".$intervenantIdChar2.",".$intervenantNameChar2.",".$intervenantIdChar1.",".$intervenantNameChar1.",".$un.",".$nuSection.",".$nuArchive.");";
-                //Mysql_Query($query);           
-                
+            } else if($interAlphabetique>0) {  
+                $query = "insert into grisou.liens(discussionId,debutLienId,debutLien,finLienId,finLien,poids,noSection,noArchive) values(".$pageIdDiscus.",".$intervenantIdChar2.",".$intervenantNameChar2.",".$intervenantIdChar1.",".$intervenantNameChar1.",".$un.",".$nuSection.",".$nuArchive.");";
             }
         }
     }
-            
     
 }
     
  function insererUserDansTableIntervenant($userName,$userId){
-       $userNameChar ='"'.$userName.'"' ;
-        $userChar='"'.$userId.'"' ;
-        $zero=0;   
-        $query = "insert into grisou.intervenants(intervenantId,intervenantName,intervenantAuteurArticle) values(".$userChar.",".$userNameChar.",".$zero.");";
-        Mysql_Query($query);
-    }
+    $userNameChar ='"'.$userName.'"' ;
+    $userChar='"'.$userId.'"' ;
+    $zero=0;   
+    $query = "insert into grisou.intervenants(intervenantId,intervenantName,intervenantAuteurArticle) values(".$userChar.",".$userNameChar.",".$zero.");";
+    Mysql_Query($query);
+}
     
 
 function chercherIdintervenantsDsTable($intervenantName){
@@ -221,10 +216,9 @@ function chercherIdintervenantsDsTable($intervenantName){
 }
  
 function chercherIdIntervenants($wikiUrl,$intervenantName){
-   // $intervenantName = "Dave Mckee";
     $intervenantName=urlencode($intervenantName);
     $urlUserId = $wikiUrl."/w/api.php?action=query&list=users&ususers=".$intervenantName."&format=json";
-    $userId = file_get_contents($urlUserId, true); //getQueryContent($listeUsersQuery);
+    $userId = file_get_contents($urlUserId, true);
     $objTalk = json_decode($userId, true);
     $query = $objTalk['query'];
     $user = $query['users'];
@@ -235,8 +229,7 @@ function chercherIdIntervenants($wikiUrl,$intervenantName){
         $id = $userFirst['name'];
     } else {
         $id = $userFirst['userid'];
-    }   
-    
+    }       
     return $id;
 }
         
@@ -251,8 +244,4 @@ function chercherLastIndexTableLiens() {
     }
 }
      
-function toDo() {
-    /* ISCREATOR OU NON */
-}
-
 ?>

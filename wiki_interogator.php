@@ -1,10 +1,7 @@
 <?php
-//
-session_start();
 
+session_start();
 require_once 'connectionDB.php';
-require_once 'creerReseauFictive.php';
-//set_time_limit(360);
 connectToDB();
 videTables();
 
@@ -35,7 +32,7 @@ function getTalks($user) {
     return mysql_query($sql);
 }
 
-function insertTalks($userTalks) { //permet d'inserer dans la table discussion la liste de toutes les discussions auxquelles le user a participe
+function insertTalks($userTalks) {
 	
     $nbTalks = sizeof($userTalks);
     for($i=0;$i<$nbTalks;$i++) {
@@ -44,9 +41,10 @@ function insertTalks($userTalks) { //permet d'inserer dans la table discussion l
         $tab = explode(':',$fixedTitle,2);		 
         $titreDiscussion = $tab[1] ;
          
-	$query = "INSERT INTO grisou.discussion (discussionId, titre) VALUES (".$talk['pageid'].", '".$titreDiscussion ."')" ;		
-	Mysql_Query($query);
-		
+         //if( aParticipeDiscussion($talk['pageid'],$userName,$wikiUrl,$titreDiscussion)) {        
+	    $query = "INSERT INTO grisou.discussion (discussionId, titre) VALUES (".$talk['pageid'].", '".$titreDiscussion ."')" ;		
+	    Mysql_Query($query);
+        //}	      		
 	$query = "INSERT INTO grisou.user (userId, userName) VALUES (".$talk['userid'].", '".$talk['user'] ."')";
 	Mysql_Query($query);
         $zero=0;
@@ -54,8 +52,7 @@ function insertTalks($userTalks) { //permet d'inserer dans la table discussion l
         $userId = $talk['userid'];
         $query = "insert into grisou.intervenants(intervenantId,intervenantName,intervenantAuteurArticle) values(".$userId.", '".$talk['user'] ."',".$zero.");";
         Mysql_Query($query);
-    }
-     
+    }     
 }
 
 function printUserTalks($talks, $user) {
@@ -71,14 +68,13 @@ function printUserTalks($talks, $user) {
     </tr></table><div id=$listeDiscussion><table class='tbl_result' width='100%'>";	
 		
     if (!$talks) {
-        echo "Impossible d'ex�cuter la requ�te dans la base : " . mysql_error();
+        echo "Impossible d'executer la requete dans la base : " . mysql_error();
         exit;
     }
     if (mysql_num_rows($talks) == 0) {
-        echo "Aucune ligne trouv�e, rien � afficher.";
+        echo "Aucune ligne trouvee, rien a afficher.";
         exit;
-    }
-    
+    }    
     while($row = mysql_fetch_assoc($talks)) {
         $envoi = '"'."envoiDiscussion(this)".'"';
     	$pageId = $row["discussionId"];
@@ -96,20 +92,80 @@ function printUserTalks($talks, $user) {
     print $result;		
 }
 
-function videTables() {
-    
-    // on vide les tables � chaque nouvelle connection
+function videTables() {    
+    // on vide les tables a chaque nouvelle connection
     mysql_query('TRUNCATE TABLE discussion;');
     mysql_query('TRUNCATE TABLE user;');
     mysql_query('TRUNCATE TABLE intervenants;');
     mysql_query('TRUNCATE TABLE liens;');
-    mysql_query('TRUNCATE TABLE centralites;');
-    
+    mysql_query('TRUNCATE TABLE centralites;');    
         
 }
 
 function getQueryContent($queryUrl) {
     return file_get_contents($queryUrl, true);
+}
+
+
+function aParticipeDiscussion($pageIdDiscus,$userName,$wikiUrl,$titreDiscussion) {  
+    $trouve = 0;       
+    $resultat=array(); 
+    $nuArchive=0;
+    $archiveValide=1;
+    $pageId=0;
+    
+    while(($archiveValide==1) && ($trouve == 0)){
+        if($nuArchive==0){
+            $pageId = $pageIdDiscus; 
+        }else {
+            $pageId = $resultat[1];
+        }
+        $urlNbSection= $wikiUrl."/w/api.php?action=parse&pageid=".$pageId."&format=json";    
+                        
+        $nbSection = file_get_contents($urlNbSection); 
+        $objTalk = json_decode($nbSection, true);
+        $parser = $objTalk['parse'];
+        $links = $parser['links'];
+        $userRelation = serialize($links);
+        $utilisateur1 = "User:".$userName;  //a adapter pour la langue mettre utilisateur a la place ou discussion utilisateur
+        $utilisateur2 = "User talk:".$userName;
+        $utilisateur3 = "User:".ucfirst($userName);
+        $utilisateur4 = "User talk:".ucfirst($userName);
+        if((strpos($userRelation,$utilisateur1)=== FALSE)&& (strpos($userRelation,$utilisateur2)=== FALSE)&& (strpos($userRelation,$utilisateur3)=== FALSE)&& (strpos($userRelation,$utilisateur4)=== FALSE)){
+        } else{
+            $trouve = 1;
+        }   
+        $nuArchive=$nuArchive+1;
+        $resultat=valideArchive($wikiUrl,$nuArchive,$titreDiscussion);
+        $archiveValide = $resultat[0];
+    }
+    return $trouve;
+}
+
+
+function valideArchive($wikiUrl,$nuArchive,$titreDiscussion){
+    $resultat=array();
+    
+    $pageIdent=" ";
+    $nameDiscussion=urlencode($titreDiscussion);
+     $urlarchive = $wikiUrl."/w/api.php?action=query&titles=Talk:".$nameDiscussion."/Archive_".$nuArchive."&format=json";
+     
+    $archiveExiste = file_get_contents($urlarchive, true); 
+    $objTalk = json_decode($archiveExiste, true);
+    $stringObjetTalk = serialize($objTalk);
+    if(strpos($stringObjetTalk,"missing")===FALSE){
+        $query = $objTalk['query'];
+        $page = $query['pages'];
+        foreach ($page as $value) {
+            $pageIdent = $value['pageid'];
+        }
+        $resultat[0]=1;
+        $resultat[1]=$pageIdent;
+    } else{
+        $resultat[0]=0;
+        $resultat[1]="nothing";
+    }
+    return $resultat;
 }
 
 ?>
